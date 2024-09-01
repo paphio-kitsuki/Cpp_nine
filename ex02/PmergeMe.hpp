@@ -3,40 +3,61 @@
 
 # include <vector>
 # include <list>
+# include <iostream>
 # include <cstddef>
 
 typedef struct s_element {
     int value;
-    int parent;
+    struct s_element* sub;
+    struct s_element* pair;
 } Element;
 
 class PmergeMe {
     private:
         std::vector<int> vec_data;
         std::list<int> list_data;
-    public:
-        PmergeMe(int[]);
 
-        template <typename T>
-        void fordJohnsonSort(T&);
+        static std::vector<Element> fordJohnsonSort(std::vector<Element>&);
+        static std::list<Element> fordJohnsonSort(std::list<Element>&);
+    public:
+        PmergeMe(void);
+        PmergeMe(const PmergeMe&);
+        PmergeMe& operator = (const PmergeMe&);
+        ~PmergeMe();
+
+        void inputDataToVec(const int[], std::size_t);
+        void inputDataToList(const int[], std::size_t);
+        void execSortVec(void);
+        void execSortList(void);
+        const std::vector<int>& getVec(void) const;
+        const std::list<int>& getList(void) const;
+
+        class NonPositiveException : public std::runtime_error {
+            private:
+                static const std::string ERROR_MESSAGE;
+            public:
+                NonPositiveException(void);
+        };
 };
 
+int get_good_index(int);
+
 template <typename T>
-void PmergeMe::fordJohnsonSort(T& t) {
-    if (t.size() < 2)
-        return;
+static void binary_insert(T& data, typename T::iterator end, Element e) {
+    typename T::iterator start = data.begin();
+    typename T::iterator mid = start;
 
-    std::size_t elems_size = t.size() / 2;
-    Element elems[] = new Element[elems_size];
-    int index = 0;
-
-    for (T::iterator it = t.begin(); it < t.end() - 1; it += 2) {
-        Element e = {std::max(*it, *(it + 1)), std::min(*it, *(it + 1))};
-        elems[index ++] = e;
+    while (start != end) {
+        mid = start;
+        std::advance(mid, (std::distance(start, end) + 1) / 2);
+        if ((*mid).value == e.value || mid == data.begin())
+            break;
+        else if ((*mid).value < e.value)
+            start = ++mid;
+        else
+            end = --mid;
     }
-    for (int i = 0;)
-
-    delete[] elems_size;
+    data.insert(mid, e);
 }
 
 #endif

@@ -1,5 +1,5 @@
-NAME	= identify
-SRCS	= main.cpp util.cpp Base.cpp A.cpp B.cpp C.cpp
+NAME	= PmergeMe
+SRCS	= main.cpp PmergeMe.cpp
 OBJS	= $(SRCS:.cpp=.o)
 CXX		= c++
 RM		= rm -f
