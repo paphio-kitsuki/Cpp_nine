@@ -70,14 +70,24 @@ double RPN::calc_modulo(double first, double second) {
     return std::fmod(first, second);
 }
 
-void RPN::applyOperator(char op) {
+bool RPN::can_apply(const std::string& str) {
+    return (str.size() == 1 &&
+            (str[0] == '+' || str[0] == '-' || str[0] == '*' || str[0] == '/' || str[0] == '%'));
+}
+
+void RPN::applyOperator(const std::string& str) {
+    if (str.size() != 1)
+        throw RPN::OperatorNotFoundException();
     if (this->data.size() < 2)
         throw RPN::LackNumberException();
+
+    char op = str[0];
     double result;
     double second = this->data.back();
     this->data.pop_back();
     double first = this->data.back();
     this->data.pop_back();
+
     switch (op) {
     case '+':
         result = RPN::calc_plus(first, second);

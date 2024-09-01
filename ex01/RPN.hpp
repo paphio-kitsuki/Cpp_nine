@@ -3,6 +3,7 @@
 
 # include <deque>
 # include <iostream>
+# include <string>
 
 // 例外が発生したあとの計算の保存状態は未定義なので、
 // 引き続き使用したい場合はclear()の実行を推奨する
@@ -22,9 +23,11 @@ class RPN {
         ~RPN();
 
         void addNumber(double);
-        void applyOperator(char);
+        void applyOperator(const std::string&);
         double printResult(void) const;
         void clear(void);
+
+        static bool can_apply(const std::string& str);
 
         class OverflowException : public std::runtime_error {
             private:
