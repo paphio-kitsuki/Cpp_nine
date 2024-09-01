@@ -112,7 +112,7 @@ void RPN::clear() {
     this->data.clear();
 }
 
-RPN::OperatorNotFoundException::OperatorNotFoundException() : std::runtime_error(RPN::OperatorNotFoundException::ERROR_MESSAGE) {
+RPN::OverflowException::OverflowException() : std::runtime_error(RPN::OverflowException::ERROR_MESSAGE) {
 }
 
 RPN::DevideByZeroException::DevideByZeroException() : std::runtime_error(RPN::DevideByZeroException::ERROR_MESSAGE) {
