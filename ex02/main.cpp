@@ -53,6 +53,19 @@ int main(int argc, char **argv) {
     for (std::size_t i = 0; i < result.size(); i++)
         std::cout << " " << result[i];
     std::cout << std::endl;
+
+    // shell コマンドで、 seq 1 10000 | shuf  とすると、1〜10000のすべての整数を用いたランダム数列が生成される
+    //
+    // std::cout << "debug: is sorted: ";
+    // bool flag = true;
+    // for (std::size_t i = 1; i <= result.size(); i++) {
+    //     if (i != static_cast<std::size_t>(result[i - 1])) {
+    //         flag = false;
+    //         break;
+    //     }
+    // }
+    // std::cout << (flag ? "OK!" : "NG...") << std::endl;
+
     std::cout << "Time to process a range of " << buffer.size() << " elements with std::vector : ";
     std::cout << (double)(vec_clock_end - vec_clock_start) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
     std::cout << "Time to process a range of " << buffer.size() << " elements with std::list : ";

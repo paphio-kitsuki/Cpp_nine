@@ -238,19 +238,15 @@ std::list<Element> PmergeMe::fordJohnsonSort(std::list<Element>& pre_data) {
             merge.push_back(*e2);
     }
 
-
-    for (std::list<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
-        std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
-    std::cout << std::endl;
-
+    // for (std::list<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
+    //     std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
+    // std::cout << std::endl;
 
     merge = PmergeMe::fordJohnsonSort(merge);
 
-
-    for (std::list<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
-        std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
-    std::cout << std::endl;
-
+    // for (std::list<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
+    //     std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
+    // std::cout << std::endl;
 
     std::list<Element> ret;
     std::list<Element> insert;
@@ -288,9 +284,9 @@ std::list<Element> PmergeMe::fordJohnsonSort(std::list<Element>& pre_data) {
     }
     delete_all_elems(delete_elems);
 
-    for (std::list<Element>::iterator it = ret.begin(); it != ret.end(); ++it)
-        std::cout << (*it).value << std::endl;
-    std::cout << std::endl;
+    // for (std::list<Element>::iterator it = ret.begin(); it != ret.end(); ++it)
+    //     std::cout << (*it).value << std::endl;
+    // std::cout << std::endl;
 
     return ret;
 }
