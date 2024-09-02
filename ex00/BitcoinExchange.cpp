@@ -80,11 +80,17 @@ bool BitcoinExchange::is_valid_date(const std::string& date) {
         ss << tmp;
         switch (i) {
         case 0:
-            if (tmp.size() != 4 || !is_all_digit(tmp) || !(ss >> year))
+            if (tmp.size() != 4 || !is_all_digit(tmp))
+                return false;
+            ss >> year;
+            if (ss.fail())
                 return false;
             break;
         case 1:
-            if (tmp.size() != 2 || !is_all_digit(tmp) || !(ss >> month && (1 <= month && month <= 12)))
+            if (tmp.size() != 2 || !is_all_digit(tmp))
+                return false;
+            ss >> month;
+            if (ss.fail() || !(1 <= month && month <= 12))
                 return false;
             break;
         default:
@@ -133,7 +139,8 @@ void BitcoinExchange::readFileAndDoFunc(const char* filename, bool is_database) 
             std::stringstream ss;
             float f_value;
             ss << value;
-            if (!(ss >> f_value))
+            ss >> f_value;
+            if (ss.fail())
                 throw BitcoinExchange::IllegalFormatException(line);
             if (f_value < 0)
                 throw BitcoinExchange::NotAPositiveException();
