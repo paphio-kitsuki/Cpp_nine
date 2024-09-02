@@ -49,15 +49,25 @@ static void binary_insert(T& data, typename T::iterator end, Element e) {
 
     while (start != end) {
         mid = start;
-        std::advance(mid, (std::distance(start, end) + 1) / 2);
-        if ((*mid).value == e.value || mid == data.begin())
+        std::advance(mid, (std::distance(start, end)) / 2);
+        if ((*mid).value == e.value || mid == data.begin()) {
             break;
+        }
         else if ((*mid).value < e.value)
             start = ++mid;
         else
-            end = --mid;
+            end = mid;
     }
     data.insert(mid, e);
+}
+
+template <typename T>
+void delete_all_elems(T& t) {
+    while (!t.empty()) {
+        Element *e = t.back();
+        t.pop_back();
+        delete e;
+    }
 }
 
 #endif

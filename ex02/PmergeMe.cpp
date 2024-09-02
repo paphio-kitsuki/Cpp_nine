@@ -36,6 +36,29 @@ static Element get_from_index(std::list<Element>& list, int index) {
     return (ret);
 }
 
+static std::vector<Element>::iterator elem_find(std::vector<Element>& vec, Element& e) {
+    for (std::vector<Element>::iterator it = vec.begin(); it != vec.end(); ++it) {
+        if ((*it).value == e.value)
+            return it;
+    }
+    return vec.end();
+}
+
+static std::list<Element>::iterator elem_find(std::list<Element>& vec, Element& e) {
+    for (std::list<Element>::iterator it = vec.begin(); it != vec.end(); ++it) {
+        if ((*it).value == e.value)
+            return it;
+    }
+    return vec.end();
+}
+
+static Element* make_elem(Element& e) {
+    Element *ret = new Element;
+    ret->value = e.value;
+    ret->sub = &e;
+    ret->pair = NULL;
+    return ret;
+}
 
 PmergeMe::PmergeMe() : vec_data(), list_data() {
 }
@@ -72,11 +95,16 @@ void PmergeMe::inputDataToList(const int src[], std::size_t size) {
 
 void PmergeMe::execSortVec() {
     std::vector<Element> convert;
+    std::vector<Element*> delete_elems;
+
     for (std::vector<int>::iterator it = this->vec_data.begin(); it != this->vec_data.end(); ++it) {
         Element e = {*it, NULL, NULL};
-        convert.push_back(e);
+        Element *e2 = make_elem(e);
+        convert.push_back(*e2);
+        delete_elems.push_back(e2);
     }
     convert = this->fordJohnsonSort(convert);
+    delete_all_elems(delete_elems);
     this->vec_data.clear();
     for (std::vector<Element>::iterator it = convert.begin(); it != convert.end(); ++it)
         this->vec_data.push_back((*it).value);
@@ -84,11 +112,16 @@ void PmergeMe::execSortVec() {
 
 void PmergeMe::execSortList() {
     std::list<Element> convert;
+    std::list<Element*> delete_elems;
+
     for (std::list<int>::iterator it = this->list_data.begin(); it != this->list_data.end(); ++it) {
         Element e = {*it, NULL, NULL};
-        convert.push_back(e);
+        Element *e2 = make_elem(e);
+        convert.push_back(*e2);
+        delete_elems.push_back(e2);
     }
     convert = this->fordJohnsonSort(convert);
+    delete_all_elems(delete_elems);
     this->list_data.clear();
     for (std::list<Element>::iterator it = convert.begin(); it != convert.end(); ++it)
         this->list_data.push_back((*it).value);
@@ -102,32 +135,41 @@ const std::list<int>& PmergeMe::getList() const {
     return this->list_data;
 }
 
-static std::vector<Element>::iterator elem_find(std::vector<Element>& vec, Element& e) {
-    for (std::vector<Element>::iterator it = vec.begin(); it != vec.end(); ++it) {
-        if ((*it).value == e.value)
-            return it;
-    }
-    return vec.end();
-}
-
 std::vector<Element> PmergeMe::fordJohnsonSort(std::vector<Element>& pre_data) {
     if (pre_data.empty() || pre_data.size() < 2)
         return pre_data;
 
+    std::vector<Element*> delete_elems;
     std::vector<Element> merge;
     for (std::vector<Element>::iterator it = pre_data.begin(); it != pre_data.end(); ++it) {
-        Element e1 = {(*it).value, &(*it), NULL};
+        Element *e1 = make_elem(*it);
+        delete_elems.push_back(e1);
         ++it;
         if (it == pre_data.end())
             break;
-        Element e2 = {(*it).value, &(*it), &e1};
-        e1.pair = &e2;
-        if (e1.value > e2.value)
-            merge.push_back(e1);
+        Element *e2 = make_elem(*it);
+        delete_elems.push_back(e2);
+        e1->pair = e2;
+        e2->pair = e1;
+        if (e1->value > e2->value)
+            merge.push_back(*e1);
         else
-            merge.push_back(e2);
+            merge.push_back(*e2);
     }
+
+/* debug
+    for (std::vector<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
+        std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
+    std::cout << std::endl;
+*/
+
     merge = PmergeMe::fordJohnsonSort(merge);
+
+/* debug
+    for (std::vector<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
+        std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
+    std::cout << std::endl;
+*/
 
     std::vector<Element> ret;
     std::vector<Element> insert;
@@ -139,9 +181,11 @@ std::vector<Element> PmergeMe::fordJohnsonSort(std::vector<Element>& pre_data) {
         ret.push_back(*((*it).sub));
     }
     if (pre_data.size() % 2 == 1) {
-        Element tmp = {pre_data.back().value, &pre_data.back(), NULL};
-        insert.push_back(tmp);
+        Element *tmp = make_elem(pre_data.back());
+        delete_elems.push_back(tmp);
+        insert.push_back(*tmp);
     }
+
     bool flag = true;
     for (int i = 0; !insert.empty(); i++) {
         Element tmp;
@@ -152,49 +196,61 @@ std::vector<Element> PmergeMe::fordJohnsonSort(std::vector<Element>& pre_data) {
                 continue;
             }
             tmp = get_from_index(insert, index);
-            continue;
         } else {
             tmp = insert.back();
             insert.pop_back();
         }
         if (tmp.pair != NULL)
-            binary_insert(ret, elem_find(ret, *tmp.pair), *(tmp.sub));
+            binary_insert(ret, ++ elem_find(ret, *(tmp.pair)), *(tmp.sub));
         else
             binary_insert(ret, ret.end(), *(tmp.sub));
     }
-    return ret;
-}
+    delete_all_elems(delete_elems);
 
-static std::list<Element>::iterator elem_find(std::list<Element>& vec, Element& e) {
-    for (std::list<Element>::iterator it = vec.begin(); it != vec.end(); ++it) {
-        if ((*it).value == e.value)
-            return it;
-    }
-    return vec.end();
+/* debug
+    for (std::vector<Element>::iterator it = ret.begin(); it != ret.end(); ++it)
+        std::cout << (*it).value << std::endl;
+    std::cout << std::endl;
+*/
+
+    return ret;
 }
 
 std::list<Element> PmergeMe::fordJohnsonSort(std::list<Element>& pre_data) {
     if (pre_data.empty() || pre_data.size() < 2)
         return pre_data;
 
+    std::list<Element*> delete_elems;
     std::list<Element> merge;
     for (std::list<Element>::iterator it = pre_data.begin(); it != pre_data.end(); ++it) {
-        Element e1 = {(*it).value, &(*it), NULL};
-        std::cout << e1.value << "??" << std::endl;
+        Element *e1 = make_elem(*it);
+        delete_elems.push_back(e1);
         ++it;
         if (it == pre_data.end())
             break;
-        Element e2 = {(*it).value, &(*it), &e1};
-        std::cout << e2.value << "??" << std::endl;
-        e1.pair = &e2;
-        if (e1.value > e2.value)
-            merge.push_back(e1);
+        Element *e2 = make_elem(*it);
+        delete_elems.push_back(e2);
+        e1->pair = e2;
+        e2->pair = e1;
+        if (e1->value > e2->value)
+            merge.push_back(*e1);
         else
-            merge.push_back(e2);
+            merge.push_back(*e2);
     }
-    std::cout << merge.front().pair->value << "?!?" << std::endl;
+
+
+    for (std::list<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
+        std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
+    std::cout << std::endl;
+
+
     merge = PmergeMe::fordJohnsonSort(merge);
-    std::cout << merge.front().value << merge.front().pair->value << ", " << merge.size() << std::endl;
+
+
+    for (std::list<Element>::iterator it = merge.begin(); it != merge.end(); ++it)
+        std::cout << (*it).value << ", " << (*it).pair->value << std::endl;
+    std::cout << std::endl;
+
 
     std::list<Element> ret;
     std::list<Element> insert;
@@ -206,10 +262,11 @@ std::list<Element> PmergeMe::fordJohnsonSort(std::list<Element>& pre_data) {
         ret.push_back(*((*it).sub));
     }
     if (pre_data.size() % 2 == 1) {
-        Element tmp = {pre_data.back().value, &pre_data.back(), NULL};
-        insert.push_back(tmp);
-        std::cout << insert.front().value << insert.size() << std::endl;
+        Element *tmp = make_elem(pre_data.back());
+        delete_elems.push_back(tmp);
+        insert.push_back(*tmp);
     }
+
     bool flag = true;
     for (int i = 0; !insert.empty(); i++) {
         Element tmp;
@@ -220,16 +277,21 @@ std::list<Element> PmergeMe::fordJohnsonSort(std::list<Element>& pre_data) {
                 continue;
             }
             tmp = get_from_index(insert, index);
-            continue;
         } else {
             tmp = insert.back();
             insert.pop_back();
         }
         if (tmp.pair != NULL)
-            binary_insert(ret, elem_find(ret, *tmp.pair), *(tmp.sub));
+            binary_insert(ret, ++ elem_find(ret, *(tmp.pair)), *(tmp.sub));
         else
             binary_insert(ret, ret.end(), *(tmp.sub));
     }
+    delete_all_elems(delete_elems);
+
+    for (std::list<Element>::iterator it = ret.begin(); it != ret.end(); ++it)
+        std::cout << (*it).value << std::endl;
+    std::cout << std::endl;
+
     return ret;
 }
 
