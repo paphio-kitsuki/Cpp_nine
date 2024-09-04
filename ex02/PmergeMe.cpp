@@ -278,7 +278,7 @@ std::list<Element> PmergeMe::fordJohnsonSort(std::list<Element>& pre_data) {
             insert.pop_back();
         }
         if (tmp.pair != NULL)
-            binary_insert(ret, ++ elem_find(ret, *(tmp.pair)), *(tmp.sub));
+            binary_insert(ret, elem_find(ret, *(tmp.pair)), *(tmp.sub));
         else
             binary_insert(ret, ret.end(), *(tmp.sub));
     }

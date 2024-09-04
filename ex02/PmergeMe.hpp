@@ -50,7 +50,7 @@ static void binary_insert(T& data, typename T::iterator end, Element e) {
     while (start != end) {
         mid = start;
         std::advance(mid, (std::distance(start, end)) / 2);
-        if ((*mid).value == e.value) {
+        if (mid == data.end() || (*mid).value == e.value) {
             break;
         }
         else if ((*mid).value < e.value)
