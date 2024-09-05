@@ -49,20 +49,22 @@ int main(int argc, char **argv) {
         std::cout << " " << data[i];
     std::cout << std::endl;
     std::cout << "After:\t";
-    const std::vector<int>& result = pmergeMe.getVec();
-    for (std::size_t i = 0; i < result.size(); i++)
-        std::cout << " " << result[i];
+    const std::list<int>& result = pmergeMe.getList();
+    for (std::list<int>::const_iterator it = result.begin(); it != result.end(); ++it)
+        std::cout << " " << *it;
     std::cout << std::endl;
 
     // shell コマンドで、 seq 1 10000 | shuf  とすると、1〜10000のすべての整数を用いたランダム数列が生成される
     //
     // std::cout << "debug: is sorted: ";
     // bool flag = true;
-    // for (std::size_t i = 1; i <= result.size(); i++) {
-    //     if (i != static_cast<std::size_t>(result[i - 1])) {
+    // std::size_t i = 1;
+    // for (std::list<int>::const_iterator it = result.begin(); it != result.end(); ++it) {
+    //     if (i != static_cast<std::size_t>(*it)) {
     //         flag = false;
     //         break;
     //     }
+    //     i++;
     // }
     // std::cout << (flag ? "OK!" : "NG...") << std::endl;
 

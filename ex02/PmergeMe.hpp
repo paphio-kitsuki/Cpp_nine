@@ -17,8 +17,10 @@ class PmergeMe {
         std::vector<int> vec_data;
         std::list<int> list_data;
 
-        static std::vector<Element> fordJohnsonSort(std::vector<Element>&);
-        static std::list<Element> fordJohnsonSort(std::list<Element>&);
+        static int get_good_index_list(int, int);
+        static int get_good_index_vec(int);
+        static std::vector<Element> ford_johnson_sort(std::vector<Element>&);
+        static std::list<Element> ford_johnson_sort(std::list<Element>&);
     public:
         PmergeMe(void);
         PmergeMe(const PmergeMe&);
@@ -40,10 +42,8 @@ class PmergeMe {
         };
 };
 
-int get_good_index(int);
-
 template <typename T>
-static void binary_insert(T& data, typename T::iterator end, Element e) {
+static void binary_insert(T& data, typename T::iterator end, Element& e) {
     typename T::iterator start = data.begin();
     typename T::iterator mid = start;
 
